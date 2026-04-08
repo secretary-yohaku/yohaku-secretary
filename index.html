@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「ヨハク」を作るオンライン秘書 | あなたの事業パートナー</title>
+  <meta name="description" content="「ヨハク」を作るオンライン秘書。SNS運用代行・経理事務・デザイン制作・AI活用で、あなたの時間と心にゆとりを生み出します。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ============ Reset & Base ============ */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Noto Sans JP', 'Inter', sans-serif;
+      color: #333;
+      line-height: 1.8;
+      background: #fff;
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; height: auto; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* ============ Header ============ */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      transition: box-shadow 0.3s;
+    }
+    .header.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+    .header-inner {
+      max-width: 1100px; margin: 0 auto; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 72px;
+    }
+    .logo {
+      font-size: 1.25rem; font-weight: 900;
+      color: #e86b5a;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .logo-icon { font-size: 1.5rem; }
+    .nav { display: flex; gap: 28px; align-items: center; }
+    .nav a {
+      font-size: 0.875rem; font-weight: 500; color: #555;
+      transition: color 0.2s;
+    }
+    .nav a:hover { color: #e86b5a; }
+    .nav-cta {
+      background: #e86b5a !important; color: #fff !important;
+      padding: 10px 24px; border-radius: 50px;
+      font-weight: 700 !important; font-size: 0.875rem !important;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { background: #d4573f !important; transform: translateY(-1px); }
+
+    /* Mobile menu */
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: #333; transition: 0.3s; }
+
+    /* ============ Hero ============ */
+    .hero {
+      padding: 160px 0 100px;
+      background: linear-gradient(135deg, #fef7f5 0%, #fff5f0 50%, #fef0eb 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; top: -50%; right: -20%;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(232,107,90,0.08) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .hero-inner {
+      display: flex; align-items: center; gap: 60px;
+      position: relative; z-index: 1;
+    }
+    .hero-text { flex: 1; }
+    .hero-badge {
+      display: inline-block;
+      background: #e86b5a; color: #fff;
+      padding: 6px 18px; border-radius: 50px;
+      font-size: 0.8rem; font-weight: 700;
+      margin-bottom: 20px;
+    }
+    .hero-title {
+      font-size: 2.75rem; font-weight: 900;
+      line-height: 1.4; margin-bottom: 24px;
+      color: #2a2a2a;
+    }
+    .hero-title span { color: #e86b5a; }
+    .hero-desc {
+      font-size: 1.1rem; color: #666;
+      margin-bottom: 36px; max-width: 500px;
+    }
+    .hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #e86b5a; color: #fff;
+      padding: 16px 36px; border-radius: 50px;
+      font-size: 1rem; font-weight: 700;
+      transition: all 0.2s; border: none; cursor: pointer;
+    }
+    .btn-primary:hover { background: #d4573f; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,107,90,0.3); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #fff; color: #e86b5a;
+      padding: 16px 36px; border-radius: 50px;
+      font-size: 1rem; font-weight: 700;
+      border: 2px solid #e86b5a;
+      transition: all 0.2s; cursor: pointer;
+    }
+    .btn-secondary:hover { background: #fef7f5; transform: translateY(-2px); }
+    .hero-visual {
+      flex: 0 0 400px;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .hero-illustration {
+      width: 360px; height: 360px;
+      border-radius: 30px;
+      box-shadow: 0 20px 60px rgba(232,107,90,0.25);
+      overflow: hidden;
+    }
+    .hero-illustration img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    /* ============ Stats ============ */
+    .stats {
+      padding: 60px 0;
+      background: #fff;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+    .stat-card {
+      text-align: center;
+      padding: 32px 20px;
+      border-radius: 16px;
+      background: #fef7f5;
+    }
+    .stat-number {
+      font-size: 2.5rem; font-weight: 900;
+      color: #e86b5a;
+      line-height: 1.2;
+    }
+    .stat-number small { font-size: 1.2rem; }
+    .stat-label {
+      font-size: 0.9rem; color: #777;
+      margin-top: 8px; font-weight: 500;
+    }
+
+    /* ============ Section Common ============ */
+    .section { padding: 100px 0; }
+    .section-alt { background: #faf9f8; }
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    .section-label {
+      display: inline-block;
+      font-size: 0.8rem; font-weight: 700;
+      color: #e86b5a; text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 2rem; font-weight: 900;
+      color: #2a2a2a;
+      margin-bottom: 16px;
+    }
+    .section-desc {
+      font-size: 1rem; color: #777;
+      max-width: 600px; margin: 0 auto;
+    }
+
+    /* ============ Problems ============ */
+    .problems-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .problem-card {
+      display: flex; align-items: flex-start; gap: 16px;
+      background: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid #f0eded;
+    }
+    .problem-icon {
+      flex-shrink: 0;
+      width: 48px; height: 48px;
+      background: #fff3f1;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+    }
+    .problem-text { font-size: 0.95rem; font-weight: 500; color: #555; }
+
+    /* ============ Services ============ */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .service-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 36px 28px;
+      text-align: center;
+      border: 1px solid #f0eded;
+      transition: all 0.3s;
+    }
+    .service-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.08);
+      border-color: #e8cec9;
+    }
+    .service-icon {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, #fef0eb, #fff5f0);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem;
+      margin: 0 auto 20px;
+    }
+    .service-name {
+      font-size: 1.1rem; font-weight: 700;
+      color: #2a2a2a; margin-bottom: 12px;
+    }
+    .service-desc {
+      font-size: 0.875rem; color: #777;
+      line-height: 1.7;
+    }
+
+    /* ============ Pricing ============ */
+    .pricing-card {
+      max-width: 560px; margin: 0 auto;
+      background: #fff;
+      border-radius: 20px;
+      border: 2px solid #f0ddd9;
+      overflow: hidden;
+      text-align: center;
+    }
+    .pricing-card-header {
+      background: linear-gradient(135deg, #e86b5a 0%, #f4a396 100%);
+      color: #fff; padding: 32px 24px;
+    }
+    .pricing-plan-name {
+      font-size: 1rem; font-weight: 700;
+      margin-bottom: 12px; opacity: 0.9;
+    }
+    .pricing-amount {
+      font-size: 3rem; font-weight: 900;
+      line-height: 1.2;
+    }
+    .pricing-amount small { font-size: 1.1rem; font-weight: 500; }
+    .pricing-unit { font-size: 0.95rem; opacity: 0.85; margin-top: 4px; }
+    .pricing-card-body { padding: 32px 40px; }
+    .pricing-note {
+      font-size: 0.95rem; color: #666;
+      margin-bottom: 24px; line-height: 1.8;
+    }
+    .pricing-note strong { color: #e86b5a; }
+    .pricing-features {
+      list-style: none; text-align: left;
+      margin-bottom: 28px;
+    }
+    .pricing-features li {
+      font-size: 0.9rem; color: #555;
+      padding: 8px 0;
+      border-bottom: 1px solid #f5f0ef;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .pricing-features li::before {
+      content: '✓'; color: #e86b5a;
+      font-weight: 700; font-size: 0.85rem;
+    }
+
+    /* ============ Strengths ============ */
+    .strengths-list { display: flex; flex-direction: column; gap: 40px; }
+    .strength-item {
+      display: flex; gap: 40px; align-items: center;
+    }
+    .strength-item:nth-child(even) { flex-direction: row-reverse; }
+    .strength-visual {
+      flex: 0 0 280px;
+      height: 220px;
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+    }
+    .strength-visual-1 { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
+    .strength-visual-2 { background: linear-gradient(135deg, #e3f2fd, #bbdefb); }
+    .strength-visual-3 { background: linear-gradient(135deg, #fff3e0, #ffe0b2); }
+    .strength-content { flex: 1; }
+    .strength-number {
+      font-size: 0.8rem; font-weight: 700;
+      color: #e86b5a; margin-bottom: 8px;
+    }
+    .strength-title {
+      font-size: 1.5rem; font-weight: 900;
+      color: #2a2a2a; margin-bottom: 12px;
+    }
+    .strength-desc { font-size: 0.95rem; color: #666; }
+
+    /* ============ Tools ============ */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .tool-tag {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #555;
+      transition: all 0.2s;
+    }
+    .tool-tag:hover {
+      border-color: #e8cec9;
+      background: #fef7f5;
+    }
+    .tool-tag-icon { font-size: 1.5rem; display: block; margin-bottom: 8px; }
+
+    /* ============ Flow ============ */
+    .flow-steps {
+      display: flex;
+      gap: 20px;
+      position: relative;
+    }
+    .flow-step {
+      flex: 1;
+      text-align: center;
+      position: relative;
+      padding: 32px 20px;
+    }
+    .flow-step-number {
+      width: 48px; height: 48px;
+      background: #e86b5a; color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; font-weight: 900;
+      margin: 0 auto 20px;
+      position: relative; z-index: 2;
+    }
+    .flow-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 55px; left: calc(50% + 30px);
+      width: calc(100% - 60px);
+      height: 2px;
+      background: #f0ddd9;
+      z-index: 1;
+    }
+    .flow-step-title {
+      font-size: 1rem; font-weight: 700;
+      color: #2a2a2a; margin-bottom: 8px;
+    }
+    .flow-step-desc {
+      font-size: 0.85rem; color: #777;
+    }
+
+    /* ============ CTA ============ */
+    .cta-section {
+      padding: 100px 0;
+      background: linear-gradient(135deg, #e86b5a 0%, #f4a396 100%);
+      text-align: center;
+      color: #fff;
+    }
+    .cta-title {
+      font-size: 2rem; font-weight: 900;
+      margin-bottom: 16px;
+    }
+    .cta-desc {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-bottom: 40px;
+      max-width: 500px;
+      margin-left: auto; margin-right: auto;
+    }
+    .btn-white {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #fff; color: #e8654e;
+      padding: 18px 48px; border-radius: 50px;
+      font-size: 1.1rem; font-weight: 700;
+      transition: all 0.2s;
+      border: none; cursor: pointer;
+    }
+    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.15); }
+
+    /* ============ FAQ ============ */
+    .faq-list { max-width: 720px; margin: 0 auto; }
+    .faq-item {
+      border-bottom: 1px solid #eee;
+    }
+    .faq-question {
+      width: 100%; background: none; border: none;
+      padding: 24px 0;
+      font-size: 1rem; font-weight: 700; color: #2a2a2a;
+      cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      text-align: left;
+      font-family: inherit;
+    }
+    .faq-question::after {
+      content: '+'; font-size: 1.5rem; color: #e8654e;
+      transition: transform 0.3s;
+    }
+    .faq-question.active::after { transform: rotate(45deg); }
+    .faq-answer {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s;
+    }
+    .faq-answer.open { max-height: 300px; padding-bottom: 24px; }
+    .faq-answer p { font-size: 0.95rem; color: #666; }
+
+    /* ============ Footer ============ */
+    .footer {
+      background: #2a2a2a; color: #aaa;
+      padding: 48px 0 32px;
+    }
+    .footer-inner {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 24px;
+    }
+    .footer-logo { font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 0.85rem; color: #aaa; transition: color 0.2s; }
+    .footer-links a:hover { color: #fff; }
+    .footer-copy {
+      text-align: center;
+      font-size: 0.8rem; color: #666;
+      margin-top: 32px; padding-top: 24px;
+      border-top: 1px solid #3a3a3a;
+    }
+
+    /* ============ Responsive ============ */
+    @media (max-width: 900px) {
+      .hero-inner { flex-direction: column; text-align: center; }
+      .hero-desc { margin: 0 auto 36px; }
+      .hero-buttons { justify-content: center; }
+      .hero-visual { flex: none; }
+      .hero-title { font-size: 2rem; }
+      .services-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); }
+      .strength-item, .strength-item:nth-child(even) { flex-direction: column; text-align: center; }
+      .strength-visual { flex: none; width: 100%; height: 180px; }
+      .tools-grid { grid-template-columns: repeat(3, 1fr); }
+      .flow-steps { flex-direction: column; align-items: center; }
+      .flow-step::after { display: none !important; }
+    }
+    @media (max-width: 600px) {
+      .nav { display: none; }
+      .hamburger { display: flex; }
+      .nav.open {
+        display: flex; flex-direction: column;
+        position: absolute; top: 72px; left: 0; right: 0;
+        background: #fff;
+        padding: 24px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        gap: 16px;
+      }
+      .hero { padding: 120px 0 60px; }
+      .hero-title { font-size: 1.7rem; }
+      .hero-illustration { width: 260px; height: 260px; font-size: 3.5rem; }
+      .services-grid { grid-template-columns: 1fr; }
+      .problems-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr; gap: 16px; }
+      .tools-grid { grid-template-columns: repeat(2, 1fr); }
+      .section { padding: 60px 0; }
+      .section-title { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ======== Header ======== -->
+<header class="header" id="header">
+  <div class="header-inner">
+    <a href="#" class="logo">
+      「ヨハク」を作るオンライン秘書
+    </a>
+    <nav class="nav" id="nav">
+      <a href="#services">サービス</a>
+      <a href="#pricing">料金</a>
+      <a href="#strengths">強み</a>
+      <a href="#flow">ご利用の流れ</a>
+      <a href="#faq">よくある質問</a>
+      <a href="#contact" class="nav-cta">お問い合わせ</a>
+    </nav>
+    <div class="hamburger" id="hamburger" onclick="document.getElementById('nav').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</header>
+
+<!-- ======== Hero ======== -->
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-text">
+      <span class="hero-badge">フリーランス・個人事業主の方へ</span>
+      <h1 class="hero-title">
+        あなたの時間に、<br>
+        <span>「ヨハク」</span>を作る<br>
+        オンライン秘書。
+      </h1>
+      <p class="hero-desc">
+        事務・SNS運用・デザイン・経理まで。<br>
+        AIを活用した高速アウトプットと、先回りの提案力で、<br>
+        あなたが本業に集中できるゆとりを生み出します。
+      </p>
+      <div class="hero-buttons">
+        <a href="#contact" class="btn-primary">無料で相談する →</a>
+        <a href="#services" class="btn-secondary">サービスを見る</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-illustration">
+        <img src="ebi-icon.png" alt="「ヨハク」を作るオンライン秘書">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== Stats ======== -->
+<section class="stats">
+  <div class="container">
+    <p style="text-align:center;font-size:1.05rem;color:#666;max-width:600px;margin:0 auto;line-height:1.9;">
+      法人の方から個人の方まで、<br>
+      今まで<strong style="color:#e86b5a;">幅広い業種・業態</strong>のクライアント様に<br>
+      対応させていただいています。
+    </p>
+    <div class="stats-grid" style="margin-top:40px;">
+      <div class="stat-card">
+        <div class="stat-number">10<small>種+</small></div>
+        <div class="stat-label">対応ツール数</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">5<small>種+</small></div>
+        <div class="stat-label">AI活用ツール</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">6<small>種+</small></div>
+        <div class="stat-label">提供サービス</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== Problems ======== -->
+<section class="section section-alt" id="problems">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Problems</span>
+      <h2 class="section-title">こんなお悩みはありませんか？</h2>
+    </div>
+    <div class="problems-grid">
+      <div class="problem-card">
+        <div class="problem-icon">😩</div>
+        <p class="problem-text">事務作業に追われて、本業に集中できない</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">📱</div>
+        <p class="problem-text">SNSを運用したいけど、時間が足りない</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">📊</div>
+        <p class="problem-text">請求書や記帳が溜まって後回しになっている</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">🤔</div>
+        <p class="problem-text">誰かに頼みたいけど、何を頼めばいいかわからない</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== Services ======== -->
+<section class="section" id="services">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Services</span>
+      <h2 class="section-title">提供サービス</h2>
+      <p class="section-desc">幅広い業務に対応。必要なものだけ、必要な分だけご依頼いただけます。</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">📸</div>
+        <div class="service-name">Instagram運用代行</div>
+        <p class="service-desc">投稿画像作成・リール動画・キャプション作成まで一括対応。Canva＋CapCut＋AIで高品質な運用を実現。</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🎨</div>
+        <div class="service-name">デザイン制作</div>
+        <p class="service-desc">チラシ・名刺・プレゼン資料・バナーなど。Canvaを活用した、伝わるデザインをお届けします。</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🎬</div>
+        <div class="service-name">動画編集</div>
+        <p class="service-desc">CapCutによるリール・ショート動画の編集。カット・テロップ・BGM挿入まで対応。</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">💰</div>
+        <div class="service-name">経理・記帳代行</div>
+        <p class="service-desc">マネーフォワード・Freeeを使った記帳代行、請求書作成。毎月の経理業務をお任せください。</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">✉️</div>
+        <div class="service-name">事務・秘書業務</div>
+        <p class="service-desc">メール対応・スケジュール管理・資料作成など。細かな事務作業を丁寧にサポートします。</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🤖</div>
+        <div class="service-name">AI活用・業務効率化</div>
+        <p class="service-desc">ChatGPT・Gemini・Claude等を活用した業務効率化の提案と実行。あなたの業務にAIを組み込みます。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== Pricing ======== -->
+<section class="section section-alt" id="pricing">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Pricing</span>
+      <h2 class="section-title">料金</h2>
+      <p class="section-desc">シンプルな時間制。必要な分だけご依頼いただけます。</p>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-card-header">
+        <div class="pricing-plan-name">基本料金</div>
+        <div class="pricing-amount">3,000<small>円</small></div>
+        <div class="pricing-unit">/ 1時間（税込）</div>
+      </div>
+      <div class="pricing-card-body">
+        <p class="pricing-note">
+          ※ 作業内容や専門性に応じて<strong>料金が変動する場合</strong>がございます。<br>
+          事前にお見積もりをお出ししますので、ご安心ください。
+        </p>
+        <ul class="pricing-features">
+          <li>事前ヒアリングでお見積もり</li>
+          <li>作業内容に応じた柔軟な対応</li>
+          <li>追加料金が発生する場合は事前にご相談</li>
+          <li>まずは小さなお仕事からでもOK</li>
+        </ul>
+        <a href="#contact" class="btn-primary" style="width:100%;justify-content:center;">まずは相談する →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== Strengths ======== -->
+<section class="section section-alt" id="strengths">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Strengths</span>
+      <h2 class="section-title">「ヨハク」を作るオンライン秘書が選ばれる理由</h2>
+    </div>
+    <div class="strengths-list">
+      <div class="strength-item">
+        <div class="strength-visual strength-visual-1">💡</div>
+        <div class="strength-content">
+          <div class="strength-number">STRENGTH 01</div>
+          <h3 class="strength-title">提案型の秘書スタイル</h3>
+          <p class="strength-desc">「言われたことだけ」ではなく、「こんなこともできますよ」を常に提案。クライアントの困りごとを先読みして解決策を持っていきます。何を頼めばいいかわからない方にも、業務の見える化レポートで安心をお届けします。</p>
+        </div>
+      </div>
+      <div class="strength-item">
+        <div class="strength-visual strength-visual-2">⚡</div>
+        <div class="strength-content">
+          <div class="strength-number">STRENGTH 02</div>
+          <h3 class="strength-title">AI活用で3倍速の納品</h3>
+          <p class="strength-desc">ChatGPT・Gemini・Claude・Genspark・NotebookLMなど、複数のAIツールを目的別に使い分け。通常の3倍のスピードで、品質を落とさず納品します。すべて人の目でチェック・調整してからお渡しするので安心です。</p>
+        </div>
+      </div>
+      <div class="strength-item">
+        <div class="strength-visual strength-visual-3">🤝</div>
+        <div class="strength-content">
+          <div class="strength-number">STRENGTH 03</div>
+          <h3 class="strength-title">事業パートナーとしての姿勢</h3>
+          <p class="strength-desc">作業をこなすだけの外注先ではなく、あなたの事業が成長することを一緒に喜べる存在でありたい。小さな仕事も丁寧に。「えびさんに任せれば大丈夫」と思っていただける信頼関係を築きます。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== Tools ======== -->
+<section class="section" id="tools">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Tools</span>
+      <h2 class="section-title">使用ツール</h2>
+      <p class="section-desc">デザイン・動画・AI・会計。幅広いツールを使いこなして業務を遂行します。</p>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-tag"><span class="tool-tag-icon">🎨</span>Canva</div>
+      <div class="tool-tag"><span class="tool-tag-icon">🎬</span>CapCut</div>
+      <div class="tool-tag"><span class="tool-tag-icon">🤖</span>ChatGPT</div>
+      <div class="tool-tag"><span class="tool-tag-icon">✨</span>Gemini</div>
+      <div class="tool-tag"><span class="tool-tag-icon">🧠</span>Claude</div>
+      <div class="tool-tag"><span class="tool-tag-icon">🔍</span>Genspark</div>
+      <div class="tool-tag"><span class="tool-tag-icon">📓</span>NotebookLM</div>
+      <div class="tool-tag"><span class="tool-tag-icon">💰</span>マネーフォワード</div>
+      <div class="tool-tag"><span class="tool-tag-icon">📊</span>Freee</div>
+      <div class="tool-tag"><span class="tool-tag-icon">📝</span>スプレッドシート</div>
+      <div class="tool-tag"><span class="tool-tag-icon">💬</span>Chatwork</div>
+      <div class="tool-tag"><span class="tool-tag-icon">📋</span>Notion</div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== Flow ======== -->
+<section class="section section-alt" id="flow">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Flow</span>
+      <h2 class="section-title">ご利用の流れ</h2>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-number">1</div>
+        <h3 class="flow-step-title">お問い合わせ</h3>
+        <p class="flow-step-desc">まずはお気軽にご相談ください。困っていること、任せたいことをお聞かせください。</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-number">2</div>
+        <h3 class="flow-step-title">ヒアリング</h3>
+        <p class="flow-step-desc">業務内容を詳しく伺い、最適なサポートプランをご提案します。</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-number">3</div>
+        <h3 class="flow-step-title">業務開始</h3>
+        <p class="flow-step-desc">お任せいただいた業務を、スピードと丁寧さをもって遂行します。</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-number">4</div>
+        <h3 class="flow-step-title">報告・改善</h3>
+        <p class="flow-step-desc">定期的に業務レポートをお送りし、改善と次の提案を行います。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== FAQ ======== -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">FAQ</span>
+      <h2 class="section-title">よくある質問</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" onclick="this.classList.toggle('active');this.nextElementSibling.classList.toggle('open')">
+          何を頼めばいいかわからないのですが、大丈夫ですか？
+        </button>
+        <div class="faq-answer">
+          <p>もちろんです！まずはお気軽にご相談ください。ヒアリングを通じて、お任せいただける業務を一緒に整理します。「こんなこともできますよ」というご提案もいたします。</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="this.classList.toggle('active');this.nextElementSibling.classList.toggle('open')">
+          どんな業務に対応していますか？
+        </button>
+        <div class="faq-answer">
+          <p>SNS運用代行（Instagram）、デザイン制作、動画編集、経理・記帳代行、事務・メール対応、業務効率化のご提案など、幅広く対応しています。まずはお気軽にお聞きください。</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="this.classList.toggle('active');this.nextElementSibling.classList.toggle('open')">
+          AIを使っているとのことですが、品質は大丈夫ですか？
+        </button>
+        <div class="faq-answer">
+          <p>AIはあくまでスピードアップのためのツールです。すべてのアウトプットは私が内容をチェック・調整してからお渡ししますので、品質にはご安心ください。</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="this.classList.toggle('active');this.nextElementSibling.classList.toggle('open')">
+          料金はどのくらいですか？
+        </button>
+        <div class="faq-answer">
+          <p>基本料金は1時間3,000円（税込）です。作業内容や専門性に応じて変動する場合がありますが、事前にお見積もりをお出ししますのでご安心ください。</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="this.classList.toggle('active');this.nextElementSibling.classList.toggle('open')">
+          連絡手段は何ですか？
+        </button>
+        <div class="faq-answer">
+          <p>Chatwork、LINE、メールなど、クライアント様のご都合に合わせて対応いたします。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== CTA ======== -->
+<section class="cta-section" id="contact">
+  <div class="container">
+    <h2 class="cta-title">まずはお気軽にご相談ください</h2>
+    <p class="cta-desc">
+      「こんなこと頼めるかな？」でOKです。<br>
+      あなたの事業をサポートできることを、一緒に見つけましょう。
+    </p>
+    <a href="mailto:your-email@example.com" class="btn-white">無料で相談する →</a>
+  </div>
+</section>
+
+<!-- ======== Footer ======== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">「ヨハク」を作るオンライン秘書</div>
+      <div class="footer-links">
+        <a href="#services">サービス</a>
+        <a href="#strengths">強み</a>
+        <a href="#flow">ご利用の流れ</a>
+        <a href="#faq">よくある質問</a>
+        <a href="#contact">お問い合わせ</a>
+      </div>
+    </div>
+    <p class="footer-copy">&copy; 2026 「ヨハク」を作るオンライン秘書. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<!-- ======== Scripts ======== -->
+<script>
+  // Header scroll effect
+  window.addEventListener('scroll', () => {
+    document.getElementById('header').classList.toggle('scrolled', window.scrollY > 10);
+  });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById('nav').classList.remove('open');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
