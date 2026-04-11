@@ -7,178 +7,441 @@
   <meta name="description" content="「ヨハク」を作るオンライン秘書🍤。SNS運用代行・経理事務・デザイン制作・AI活用で、あなたの時間と心にゆとりを生み出します。">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <style>
+    /* ============ Custom Properties ============ */
+    :root {
+      --coral: #e86b5a;
+      --coral-deep: #d45a4a;
+      --coral-light: #f4a396;
+      --coral-pale: #fef3f0;
+      --ink: #1a1a1a;
+      --ink-soft: #4a4a4a;
+      --ink-muted: #8a8a8a;
+      --cream: #faf8f5;
+      --cream-warm: #f5f0eb;
+      --white: #ffffff;
+      --gold: #c4a265;
+      --gold-light: #e8d5b0;
+      --shadow-sm: 0 2px 8px rgba(26,26,26,0.04);
+      --shadow-md: 0 8px 32px rgba(26,26,26,0.06);
+      --shadow-lg: 0 20px 60px rgba(26,26,26,0.08);
+      --shadow-coral: 0 12px 40px rgba(232,107,90,0.2);
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body: 'Noto Sans JP', sans-serif;
+      --font-accent: 'Zen Kaku Gothic New', sans-serif;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     /* ============ Reset & Base ============ */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; font-size: 16px; }
     body {
-      font-family: 'Noto Sans JP', 'Inter', sans-serif;
-      color: #333;
-      line-height: 1.8;
-      background: #fff;
+      font-family: var(--font-body);
+      color: var(--ink);
+      line-height: 1.9;
+      background: var(--cream);
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     a { text-decoration: none; color: inherit; }
     img { max-width: 100%; height: auto; }
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+
+    /* ============ Grain Overlay ============ */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.018;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px;
+    }
+
+    /* ============ Scroll Animations ============ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-50px);
+      transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+    }
+    .reveal-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(50px);
+      transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+    }
+    .reveal-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .reveal-scale {
+      opacity: 0;
+      transform: scale(0.92);
+      transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+    }
+    .reveal-scale.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .stagger-1 { transition-delay: 0.05s; }
+    .stagger-2 { transition-delay: 0.12s; }
+    .stagger-3 { transition-delay: 0.19s; }
+    .stagger-4 { transition-delay: 0.26s; }
+    .stagger-5 { transition-delay: 0.33s; }
+    .stagger-6 { transition-delay: 0.40s; }
 
     /* ============ Header ============ */
     .header {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid rgba(0,0,0,0.06);
-      transition: box-shadow 0.3s;
+      background: rgba(250,248,245,0.85);
+      backdrop-filter: blur(20px) saturate(1.2);
+      -webkit-backdrop-filter: blur(20px) saturate(1.2);
+      border-bottom: 1px solid rgba(26,26,26,0.04);
+      transition: all 0.4s var(--ease-smooth);
     }
-    .header.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+    .header.scrolled {
+      background: rgba(250,248,245,0.95);
+      box-shadow: 0 1px 24px rgba(26,26,26,0.06);
+    }
     .header-inner {
-      max-width: 1100px; margin: 0 auto; padding: 0 24px;
+      max-width: 1120px; margin: 0 auto; padding: 0 32px;
       display: flex; align-items: center; justify-content: space-between;
-      height: 72px;
+      height: 76px;
     }
     .logo {
-      font-size: 1.25rem; font-weight: 900;
-      color: #e86b5a;
-      display: flex; align-items: center; gap: 8px;
+      font-family: var(--font-accent);
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--ink);
+      display: flex; align-items: center; gap: 10px;
+      letter-spacing: 0.02em;
     }
-    .logo-icon { font-size: 1.5rem; }
-    .nav { display: flex; gap: 28px; align-items: center; }
+    .logo-mark {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px;
+      background: var(--coral);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .nav { display: flex; gap: 32px; align-items: center; }
     .nav a {
-      font-size: 0.875rem; font-weight: 500; color: #555;
-      transition: color 0.2s;
+      font-family: var(--font-accent);
+      font-size: 0.82rem; font-weight: 500; color: var(--ink-muted);
+      transition: color 0.3s;
+      letter-spacing: 0.04em;
+      position: relative;
     }
-    .nav a:hover { color: #e86b5a; }
+    .nav a:not(.nav-cta)::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--coral);
+      transition: width 0.3s var(--ease-out);
+    }
+    .nav a:not(.nav-cta):hover { color: var(--ink); }
+    .nav a:not(.nav-cta):hover::after { width: 100%; }
     .nav-cta {
-      background: #e86b5a !important; color: #fff !important;
-      padding: 10px 24px; border-radius: 50px;
-      font-weight: 700 !important; font-size: 0.875rem !important;
-      transition: background 0.2s, transform 0.2s;
+      background: var(--ink) !important; color: var(--white) !important;
+      padding: 10px 26px; border-radius: 50px;
+      font-weight: 700 !important; font-size: 0.8rem !important;
+      letter-spacing: 0.06em !important;
+      transition: all 0.3s var(--ease-out);
     }
-    .nav-cta:hover { background: #d4573f !important; transform: translateY(-1px); }
+    .nav-cta:hover {
+      background: var(--coral) !important;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-coral);
+    }
+    .nav-cta::after { display: none !important; }
 
     /* Mobile menu */
-    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; }
-    .hamburger span { display: block; width: 24px; height: 2px; background: #333; transition: 0.3s; }
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 8px;
+      background: none; border: none;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 1.5px;
+      background: var(--ink); transition: 0.3s var(--ease-out);
+      border-radius: 2px;
+    }
 
     /* ============ Hero ============ */
     .hero {
-      padding: 160px 0 100px;
-      background: linear-gradient(135deg, #fef7f5 0%, #fff5f0 50%, #fef0eb 100%);
+      padding: 180px 0 140px;
       position: relative;
       overflow: hidden;
+      background: var(--cream);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px; right: -150px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(232,107,90,0.06) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: heroGlow 8s ease-in-out infinite alternate;
     }
     .hero::after {
       content: '';
-      position: absolute; top: -50%; right: -20%;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(232,107,90,0.08) 0%, transparent 70%);
+      position: absolute;
+      bottom: -100px; left: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(196,162,101,0.04) 0%, transparent 70%);
       border-radius: 50%;
+      animation: heroGlow 10s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes heroGlow {
+      0% { transform: scale(1) translate(0, 0); }
+      100% { transform: scale(1.1) translate(20px, -20px); }
     }
     .hero-inner {
-      display: flex; align-items: center; gap: 60px;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 80px;
+      align-items: center;
       position: relative; z-index: 1;
     }
-    .hero-text { flex: 1; }
+    .hero-text { position: relative; }
     .hero-badge {
-      display: inline-block;
-      background: #e86b5a; color: #fff;
-      padding: 6px 18px; border-radius: 50px;
-      font-size: 0.8rem; font-weight: 700;
-      margin-bottom: 20px;
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--white);
+      border: 1px solid rgba(232,107,90,0.15);
+      color: var(--coral);
+      padding: 8px 20px; border-radius: 50px;
+      font-family: var(--font-accent);
+      font-size: 0.75rem; font-weight: 700;
+      margin-bottom: 28px;
+      letter-spacing: 0.06em;
+      box-shadow: var(--shadow-sm);
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--coral);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.4); }
     }
     .hero-title {
-      font-size: 2.75rem; font-weight: 900;
-      line-height: 1.4; margin-bottom: 24px;
-      color: #2a2a2a;
+      font-family: var(--font-body);
+      font-size: 3.2rem; font-weight: 900;
+      line-height: 1.35; margin-bottom: 28px;
+      color: var(--ink);
+      letter-spacing: -0.02em;
     }
-    .hero-title span { color: #e86b5a; }
+    .hero-title em {
+      font-style: normal;
+      color: var(--coral);
+      position: relative;
+    }
+    .hero-title em::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 0; right: 0;
+      height: 8px;
+      background: rgba(232,107,90,0.12);
+      border-radius: 4px;
+      z-index: -1;
+    }
     .hero-desc {
-      font-size: 1.1rem; color: #666;
-      margin-bottom: 36px; max-width: 500px;
+      font-size: 1.05rem; color: var(--ink-soft);
+      margin-bottom: 44px; max-width: 480px;
+      line-height: 2;
+      font-weight: 300;
     }
     .hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
     .btn-primary {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: #e86b5a; color: #fff;
-      padding: 16px 36px; border-radius: 50px;
-      font-size: 1rem; font-weight: 700;
-      transition: all 0.2s; border: none; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--coral); color: var(--white);
+      padding: 17px 40px; border-radius: 50px;
+      font-family: var(--font-accent);
+      font-size: 0.9rem; font-weight: 700;
+      letter-spacing: 0.04em;
+      transition: all 0.4s var(--ease-out);
+      border: none; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(232,107,90,0.25);
     }
-    .btn-primary:hover { background: #d4573f; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,107,90,0.3); }
+    .btn-primary:hover {
+      background: var(--coral-deep);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 36px rgba(232,107,90,0.35);
+    }
+    .btn-primary .arrow {
+      transition: transform 0.3s var(--ease-out);
+    }
+    .btn-primary:hover .arrow {
+      transform: translateX(4px);
+    }
     .btn-secondary {
       display: inline-flex; align-items: center; gap: 8px;
-      background: #fff; color: #e86b5a;
-      padding: 16px 36px; border-radius: 50px;
-      font-size: 1rem; font-weight: 700;
-      border: 2px solid #e86b5a;
-      transition: all 0.2s; cursor: pointer;
+      background: transparent; color: var(--ink);
+      padding: 17px 40px; border-radius: 50px;
+      font-family: var(--font-accent);
+      font-size: 0.9rem; font-weight: 700;
+      letter-spacing: 0.04em;
+      border: 1.5px solid rgba(26,26,26,0.15);
+      transition: all 0.3s var(--ease-out); cursor: pointer;
     }
-    .btn-secondary:hover { background: #fef7f5; transform: translateY(-2px); }
+    .btn-secondary:hover {
+      border-color: var(--coral);
+      color: var(--coral);
+      transform: translateY(-2px);
+    }
     .hero-visual {
-      flex: 0 0 400px;
       display: flex; justify-content: center; align-items: center;
+      position: relative;
+    }
+    .hero-visual::before {
+      content: '';
+      position: absolute;
+      width: 380px; height: 380px;
+      border: 1px solid rgba(232,107,90,0.08);
+      border-radius: 50%;
+      animation: heroRing 20s linear infinite;
+    }
+    @keyframes heroRing {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
     .hero-illustration {
-      width: 360px; height: 360px;
-      border-radius: 30px;
-      box-shadow: 0 20px 60px rgba(232,107,90,0.25);
+      width: 380px; height: 380px;
+      border-radius: var(--radius-xl);
       overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(232,107,90,0.06);
     }
     .hero-illustration img {
       width: 100%; height: 100%;
       object-fit: cover;
+      transition: transform 0.6s var(--ease-out);
     }
+    .hero-illustration:hover img {
+      transform: scale(1.04);
+    }
+
+    /* ============ Marquee / Trust ============ */
+    .trust-strip {
+      padding: 48px 0;
+      background: var(--white);
+      border-top: 1px solid rgba(26,26,26,0.04);
+      border-bottom: 1px solid rgba(26,26,26,0.04);
+    }
+    .trust-text {
+      text-align: center;
+      font-size: 0.95rem;
+      color: var(--ink-soft);
+      line-height: 2;
+    }
+    .trust-text strong { color: var(--coral); font-weight: 700; }
 
     /* ============ Stats ============ */
     .stats {
-      padding: 60px 0;
-      background: #fff;
+      padding: 72px 0;
+      background: var(--white);
     }
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 32px;
+      gap: 24px;
     }
     .stat-card {
       text-align: center;
-      padding: 32px 20px;
-      border-radius: 16px;
-      background: #fef7f5;
+      padding: 40px 24px;
+      border-radius: var(--radius-lg);
+      background: var(--cream);
+      border: 1px solid rgba(26,26,26,0.03);
+      transition: all 0.4s var(--ease-out);
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
     }
     .stat-number {
-      font-size: 2.5rem; font-weight: 900;
-      color: #e86b5a;
-      line-height: 1.2;
+      font-family: var(--font-display);
+      font-size: 3.2rem; font-weight: 600;
+      color: var(--coral);
+      line-height: 1;
+      letter-spacing: -0.02em;
     }
-    .stat-number small { font-size: 1.2rem; }
+    .stat-number small {
+      font-size: 1rem;
+      font-family: var(--font-accent);
+      font-weight: 500;
+    }
     .stat-label {
-      font-size: 0.9rem; color: #777;
-      margin-top: 8px; font-weight: 500;
+      font-family: var(--font-accent);
+      font-size: 0.82rem; color: var(--ink-muted);
+      margin-top: 12px; font-weight: 500;
+      letter-spacing: 0.04em;
     }
 
     /* ============ Section Common ============ */
-    .section { padding: 100px 0; }
-    .section-alt { background: #faf9f8; }
+    .section { padding: 120px 0; }
+    .section-on-cream { background: var(--cream); }
+    .section-on-white { background: var(--white); }
     .section-header {
       text-align: center;
-      margin-bottom: 60px;
+      margin-bottom: 72px;
     }
     .section-label {
       display: inline-block;
-      font-size: 0.8rem; font-weight: 700;
-      color: #e86b5a; text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 12px;
+      font-family: var(--font-display);
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--coral);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      font-style: italic;
     }
     .section-title {
-      font-size: 2rem; font-weight: 900;
-      color: #2a2a2a;
-      margin-bottom: 16px;
+      font-size: 2.2rem; font-weight: 900;
+      color: var(--ink);
+      margin-bottom: 18px;
+      letter-spacing: -0.01em;
+      line-height: 1.4;
     }
     .section-desc {
-      font-size: 1rem; color: #777;
-      max-width: 600px; margin: 0 auto;
+      font-size: 0.95rem; color: var(--ink-muted);
+      max-width: 540px; margin: 0 auto;
+      font-weight: 300;
+      line-height: 1.9;
+    }
+
+    /* Decorative line */
+    .section-header::after {
+      content: '';
+      display: block;
+      width: 40px; height: 1.5px;
+      background: var(--coral);
+      margin: 24px auto 0;
+      opacity: 0.4;
     }
 
     /* ============ Problems ============ */
@@ -188,21 +451,35 @@
       gap: 20px;
     }
     .problem-card {
-      display: flex; align-items: flex-start; gap: 16px;
-      background: #fff;
-      padding: 24px;
-      border-radius: 12px;
-      border: 1px solid #f0eded;
+      display: flex; align-items: center; gap: 20px;
+      background: var(--white);
+      padding: 28px 32px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(26,26,26,0.04);
+      transition: all 0.4s var(--ease-out);
+    }
+    .problem-card:hover {
+      transform: translateX(6px);
+      border-color: rgba(232,107,90,0.15);
+      box-shadow: var(--shadow-sm);
     }
     .problem-icon {
       flex-shrink: 0;
-      width: 48px; height: 48px;
-      background: #fff3f1;
-      border-radius: 12px;
+      width: 52px; height: 52px;
+      border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem;
+      overflow: hidden;
     }
-    .problem-text { font-size: 0.95rem; font-weight: 500; color: #555; }
+    .problem-icon img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+    }
+    .problem-text {
+      font-family: var(--font-accent);
+      font-size: 0.92rem; font-weight: 500;
+      color: var(--ink-soft);
+      line-height: 1.6;
+    }
 
     /* ============ Services ============ */
     .services-grid {
@@ -211,105 +488,215 @@
       gap: 24px;
     }
     .service-card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 36px 28px;
-      text-align: center;
-      border: 1px solid #f0eded;
-      transition: all 0.3s;
+      background: var(--cream);
+      border-radius: var(--radius-lg);
+      padding: 44px 32px 40px;
+      border: 1px solid rgba(26,26,26,0.03);
+      transition: all 0.5s var(--ease-out);
+      position: relative;
+      overflow: hidden;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--coral), var(--coral-light));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s var(--ease-out);
     }
     .service-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 36px rgba(0,0,0,0.08);
-      border-color: #e8cec9;
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+      background: var(--white);
     }
+    .service-card:hover::before { transform: scaleX(1); }
     .service-icon {
       width: 64px; height: 64px;
-      background: linear-gradient(135deg, #fef0eb, #fff5f0);
       border-radius: 16px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.8rem;
-      margin: 0 auto 20px;
+      margin-bottom: 24px;
+      transition: all 0.4s var(--ease-out);
+      overflow: hidden;
+    }
+    .service-icon img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+    }
+    .service-card:hover .service-icon {
+      transform: scale(1.08) rotate(-3deg);
     }
     .service-name {
-      font-size: 1.1rem; font-weight: 700;
-      color: #2a2a2a; margin-bottom: 12px;
+      font-family: var(--font-accent);
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 12px;
     }
     .service-desc {
-      font-size: 0.875rem; color: #777;
-      line-height: 1.7;
+      font-size: 0.85rem; color: var(--ink-muted);
+      line-height: 1.8; font-weight: 300;
     }
 
     /* ============ Pricing ============ */
+    .pricing-wrapper {
+      max-width: 580px; margin: 0 auto;
+      position: relative;
+    }
+    .pricing-wrapper::before {
+      content: '';
+      position: absolute;
+      top: 20px; left: 20px; right: -20px; bottom: -20px;
+      background: linear-gradient(135deg, rgba(232,107,90,0.06), rgba(196,162,101,0.04));
+      border-radius: var(--radius-xl);
+      z-index: 0;
+    }
     .pricing-card {
-      max-width: 560px; margin: 0 auto;
-      background: #fff;
-      border-radius: 20px;
-      border: 2px solid #f0ddd9;
+      position: relative; z-index: 1;
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(26,26,26,0.06);
       overflow: hidden;
       text-align: center;
+      box-shadow: var(--shadow-md);
     }
     .pricing-card-header {
-      background: linear-gradient(135deg, #e86b5a 0%, #f4a396 100%);
-      color: #fff; padding: 32px 24px;
+      background: var(--ink);
+      color: var(--white);
+      padding: 44px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .pricing-card-header::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -30%;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(232,107,90,0.2) 0%, transparent 70%);
+      border-radius: 50%;
     }
     .pricing-plan-name {
-      font-size: 1rem; font-weight: 700;
-      margin-bottom: 12px; opacity: 0.9;
+      font-family: var(--font-display);
+      font-size: 0.95rem; font-weight: 600;
+      margin-bottom: 14px;
+      opacity: 0.7;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-style: italic;
+      position: relative;
     }
     .pricing-amount {
-      font-size: 3rem; font-weight: 900;
-      line-height: 1.2;
+      font-family: var(--font-display);
+      font-size: 4rem; font-weight: 600;
+      line-height: 1;
+      position: relative;
+      letter-spacing: -0.02em;
     }
-    .pricing-amount small { font-size: 1.1rem; font-weight: 500; }
-    .pricing-unit { font-size: 0.95rem; opacity: 0.85; margin-top: 4px; }
-    .pricing-card-body { padding: 32px 40px; }
+    .pricing-amount small {
+      font-size: 1.1rem;
+      font-family: var(--font-accent);
+      font-weight: 400;
+    }
+    .pricing-unit {
+      font-family: var(--font-accent);
+      font-size: 0.85rem;
+      opacity: 0.6; margin-top: 8px;
+      position: relative;
+      letter-spacing: 0.04em;
+    }
+    .pricing-card-body { padding: 40px 44px; }
     .pricing-note {
-      font-size: 0.95rem; color: #666;
-      margin-bottom: 24px; line-height: 1.8;
+      font-size: 0.9rem; color: var(--ink-soft);
+      margin-bottom: 28px; line-height: 1.9;
+      font-weight: 300;
     }
-    .pricing-note strong { color: #e86b5a; }
+    .pricing-note strong { color: var(--coral); font-weight: 700; }
     .pricing-features {
       list-style: none; text-align: left;
-      margin-bottom: 28px;
+      margin-bottom: 36px;
     }
     .pricing-features li {
-      font-size: 0.9rem; color: #555;
-      padding: 8px 0;
-      border-bottom: 1px solid #f5f0ef;
-      display: flex; align-items: center; gap: 10px;
+      font-family: var(--font-accent);
+      font-size: 0.88rem; color: var(--ink-soft);
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(26,26,26,0.04);
+      display: flex; align-items: center; gap: 14px;
+      font-weight: 400;
     }
     .pricing-features li::before {
-      content: '✓'; color: #e86b5a;
-      font-weight: 700; font-size: 0.85rem;
+      content: '';
+      width: 20px; height: 20px;
+      background: var(--coral-pale);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23e86b5a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
     }
 
     /* ============ Strengths ============ */
-    .strengths-list { display: flex; flex-direction: column; gap: 40px; }
+    .strengths-list {
+      display: flex; flex-direction: column;
+      gap: 80px;
+    }
     .strength-item {
-      display: flex; gap: 40px; align-items: center;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 60px;
+      align-items: center;
     }
-    .strength-item:nth-child(even) { flex-direction: row-reverse; }
+    .strength-item:nth-child(even) {
+      direction: rtl;
+    }
+    .strength-item:nth-child(even) > * {
+      direction: ltr;
+    }
     .strength-visual {
-      flex: 0 0 280px;
-      height: 220px;
-      border-radius: 20px;
+      height: 240px;
+      border-radius: var(--radius-xl);
       display: flex; align-items: center; justify-content: center;
-      font-size: 4rem;
+      position: relative;
+      overflow: hidden;
     }
-    .strength-visual-1 { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
-    .strength-visual-2 { background: linear-gradient(135deg, #e3f2fd, #bbdefb); }
-    .strength-visual-3 { background: linear-gradient(135deg, #fff3e0, #ffe0b2); }
-    .strength-content { flex: 1; }
+    .strength-visual img {
+      width: 140px; height: 140px;
+      object-fit: contain;
+    }
+    .strength-visual::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3);
+    }
+    .strength-visual-1 {
+      background: linear-gradient(145deg, #e8f5e9 0%, #a5d6a7 100%);
+    }
+    .strength-visual-2 {
+      background: linear-gradient(145deg, #e3f2fd 0%, #90caf9 100%);
+    }
+    .strength-visual-3 {
+      background: linear-gradient(145deg, #fff3e0 0%, #ffcc80 100%);
+    }
+    .strength-content { }
     .strength-number {
-      font-size: 0.8rem; font-weight: 700;
-      color: #e86b5a; margin-bottom: 8px;
+      font-family: var(--font-display);
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--coral); margin-bottom: 10px;
+      letter-spacing: 0.12em;
+      font-style: italic;
     }
     .strength-title {
-      font-size: 1.5rem; font-weight: 900;
-      color: #2a2a2a; margin-bottom: 12px;
+      font-size: 1.55rem; font-weight: 900;
+      color: var(--ink); margin-bottom: 16px;
+      line-height: 1.5;
+      letter-spacing: -0.01em;
     }
-    .strength-desc { font-size: 0.95rem; color: #666; }
+    .strength-desc {
+      font-size: 0.92rem; color: var(--ink-muted);
+      font-weight: 300;
+      line-height: 2;
+    }
 
     /* ============ Tools ============ */
     .tools-grid {
@@ -318,169 +705,304 @@
       gap: 16px;
     }
     .tool-tag {
-      background: #fff;
-      border: 1px solid #eee;
-      border-radius: 12px;
-      padding: 16px;
+      background: var(--white);
+      border: 1px solid rgba(26,26,26,0.05);
+      border-radius: var(--radius-md);
+      padding: 24px 16px;
       text-align: center;
-      font-size: 0.9rem;
+      font-family: var(--font-accent);
+      font-size: 0.82rem;
       font-weight: 500;
-      color: #555;
-      transition: all 0.2s;
+      color: var(--ink-soft);
+      transition: all 0.4s var(--ease-out);
+      cursor: default;
     }
     .tool-tag:hover {
-      border-color: #e8cec9;
-      background: #fef7f5;
+      border-color: rgba(232,107,90,0.2);
+      background: var(--coral-pale);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-sm);
     }
-    .tool-tag-icon { font-size: 1.5rem; display: block; margin-bottom: 8px; }
+    .tool-tag-icon {
+      font-size: 1.6rem;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 10px;
+      width: 36px; height: 36px;
+      margin-left: auto; margin-right: auto;
+      transition: transform 0.4s var(--ease-out);
+    }
+    .tool-tag-icon svg {
+      width: 28px; height: 28px;
+    }
+    .tool-tag:hover .tool-tag-icon {
+      transform: scale(1.15);
+    }
 
     /* ============ Flow ============ */
     .flow-steps {
-      display: flex;
-      gap: 20px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
       position: relative;
     }
-    .flow-step {
-      flex: 1;
-      text-align: center;
-      position: relative;
-      padding: 32px 20px;
-    }
-    .flow-step-number {
-      width: 48px; height: 48px;
-      background: #e86b5a; color: #fff;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; font-weight: 900;
-      margin: 0 auto 20px;
-      position: relative; z-index: 2;
-    }
-    .flow-step:not(:last-child)::after {
+    .flow-steps::before {
       content: '';
       position: absolute;
-      top: 55px; left: calc(50% + 30px);
-      width: calc(100% - 60px);
-      height: 2px;
-      background: #f0ddd9;
-      z-index: 1;
+      top: 36px;
+      left: calc(12.5% + 24px);
+      right: calc(12.5% + 24px);
+      height: 1px;
+      background: linear-gradient(90deg, var(--coral-light), var(--coral), var(--coral-light));
+      opacity: 0.3;
+    }
+    .flow-step {
+      text-align: center;
+      padding: 0 16px;
+      position: relative;
+    }
+    .flow-step-number {
+      width: 56px; height: 56px;
+      background: var(--white);
+      border: 2px solid var(--coral);
+      color: var(--coral);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.4rem; font-weight: 600;
+      margin: 0 auto 24px;
+      position: relative; z-index: 2;
+      transition: all 0.4s var(--ease-out);
+    }
+    .flow-step:hover .flow-step-number {
+      background: var(--coral);
+      color: var(--white);
+      transform: scale(1.1);
+      box-shadow: var(--shadow-coral);
     }
     .flow-step-title {
-      font-size: 1rem; font-weight: 700;
-      color: #2a2a2a; margin-bottom: 8px;
+      font-family: var(--font-accent);
+      font-size: 0.95rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 10px;
     }
     .flow-step-desc {
-      font-size: 0.85rem; color: #777;
+      font-size: 0.82rem; color: var(--ink-muted);
+      font-weight: 300;
+      line-height: 1.7;
     }
 
     /* ============ CTA ============ */
     .cta-section {
-      padding: 100px 0;
-      background: linear-gradient(135deg, #e86b5a 0%, #f4a396 100%);
+      padding: 120px 0;
+      background: var(--ink);
       text-align: center;
-      color: #fff;
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
     }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: -200px; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(232,107,90,0.12) 0%, transparent 60%);
+      border-radius: 50%;
+    }
+    .cta-section::after {
+      content: '';
+      position: absolute;
+      bottom: -100px; right: -100px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(196,162,101,0.08) 0%, transparent 60%);
+      border-radius: 50%;
+    }
+    .cta-inner { position: relative; z-index: 1; }
     .cta-title {
-      font-size: 2rem; font-weight: 900;
-      margin-bottom: 16px;
+      font-size: 2.4rem; font-weight: 900;
+      margin-bottom: 18px;
+      letter-spacing: -0.02em;
     }
     .cta-desc {
-      font-size: 1.1rem;
-      opacity: 0.9;
-      margin-bottom: 40px;
-      max-width: 500px;
+      font-size: 1.05rem;
+      opacity: 0.6;
+      margin-bottom: 48px;
+      max-width: 480px;
       margin-left: auto; margin-right: auto;
+      font-weight: 300;
+      line-height: 2;
     }
     .btn-white {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: #fff; color: #e8654e;
-      padding: 18px 48px; border-radius: 50px;
-      font-size: 1.1rem; font-weight: 700;
-      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--white); color: var(--ink);
+      padding: 18px 52px; border-radius: 50px;
+      font-family: var(--font-accent);
+      font-size: 0.95rem; font-weight: 700;
+      letter-spacing: 0.04em;
+      transition: all 0.4s var(--ease-out);
       border: none; cursor: pointer;
     }
-    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.15); }
+    .btn-white:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 48px rgba(255,255,255,0.15);
+      background: var(--coral);
+      color: var(--white);
+    }
+    .cta-sub {
+      margin-top: 24px;
+      font-size: 0.85rem;
+      opacity: 0.4;
+      font-weight: 300;
+    }
 
     /* ============ FAQ ============ */
-    .faq-list { max-width: 720px; margin: 0 auto; }
+    .faq-list { max-width: 700px; margin: 0 auto; }
     .faq-item {
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid rgba(26,26,26,0.06);
     }
     .faq-question {
       width: 100%; background: none; border: none;
-      padding: 24px 0;
-      font-size: 1rem; font-weight: 700; color: #2a2a2a;
+      padding: 28px 0;
+      font-family: var(--font-accent);
+      font-size: 0.95rem; font-weight: 700; color: var(--ink);
       cursor: pointer;
       display: flex; justify-content: space-between; align-items: center;
       text-align: left;
-      font-family: inherit;
+      transition: color 0.3s;
+      gap: 20px;
     }
-    .faq-question::after {
-      content: '+'; font-size: 1.5rem; color: #e8654e;
-      transition: transform 0.3s;
+    .faq-question:hover { color: var(--coral); }
+    .faq-toggle {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--cream);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.4s var(--ease-out);
     }
-    .faq-question.active::after { transform: rotate(45deg); }
+    .faq-toggle svg {
+      width: 14px; height: 14px;
+      stroke: var(--ink-muted);
+      transition: transform 0.4s var(--ease-out);
+    }
+    .faq-question.active .faq-toggle {
+      background: var(--coral);
+    }
+    .faq-question.active .faq-toggle svg {
+      stroke: white;
+      transform: rotate(45deg);
+    }
     .faq-answer {
       max-height: 0; overflow: hidden;
-      transition: max-height 0.3s ease, padding 0.3s;
+      transition: max-height 0.5s var(--ease-out), padding 0.3s;
     }
-    .faq-answer.open { max-height: 300px; padding-bottom: 24px; }
-    .faq-answer p { font-size: 0.95rem; color: #666; }
+    .faq-answer.open { max-height: 300px; padding-bottom: 28px; }
+    .faq-answer p {
+      font-size: 0.9rem; color: var(--ink-muted);
+      font-weight: 300;
+      line-height: 2;
+    }
 
     /* ============ Footer ============ */
     .footer {
-      background: #2a2a2a; color: #aaa;
-      padding: 48px 0 32px;
+      background: var(--ink);
+      color: rgba(255,255,255,0.4);
+      padding: 60px 0 40px;
     }
     .footer-inner {
       display: flex; justify-content: space-between; align-items: center;
       flex-wrap: wrap; gap: 24px;
     }
-    .footer-logo { font-size: 1.1rem; font-weight: 700; color: #fff; }
-    .footer-links { display: flex; gap: 24px; }
-    .footer-links a { font-size: 0.85rem; color: #aaa; transition: color 0.2s; }
-    .footer-links a:hover { color: #fff; }
+    .footer-logo {
+      font-family: var(--font-accent);
+      font-size: 1rem; font-weight: 700;
+      color: rgba(255,255,255,0.85);
+    }
+    .footer-links { display: flex; gap: 28px; }
+    .footer-links a {
+      font-family: var(--font-accent);
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.35);
+      transition: color 0.3s;
+      letter-spacing: 0.02em;
+    }
+    .footer-links a:hover { color: var(--coral); }
     .footer-copy {
       text-align: center;
-      font-size: 0.8rem; color: #666;
-      margin-top: 32px; padding-top: 24px;
-      border-top: 1px solid #3a3a3a;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.2);
+      margin-top: 40px; padding-top: 28px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      letter-spacing: 0.04em;
     }
 
     /* ============ Responsive ============ */
     @media (max-width: 900px) {
-      .hero-inner { flex-direction: column; text-align: center; }
+      .container { padding: 0 24px; }
+      .hero { padding: 140px 0 100px; }
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 48px;
+        text-align: center;
+      }
       .hero-desc { margin: 0 auto 36px; }
       .hero-buttons { justify-content: center; }
-      .hero-visual { flex: none; }
-      .hero-title { font-size: 2rem; }
+      .hero-visual { order: -1; }
+      .hero-illustration { width: 280px; height: 280px; }
+      .hero-title { font-size: 2.2rem; }
       .services-grid { grid-template-columns: repeat(2, 1fr); }
       .stats-grid { grid-template-columns: repeat(3, 1fr); }
-      .strength-item, .strength-item:nth-child(even) { flex-direction: column; text-align: center; }
-      .strength-visual { flex: none; width: 100%; height: 180px; }
+      .strength-item,
+      .strength-item:nth-child(even) {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        text-align: center;
+        direction: ltr;
+      }
+      .strength-visual { height: 200px; }
       .tools-grid { grid-template-columns: repeat(3, 1fr); }
-      .flow-steps { flex-direction: column; align-items: center; }
-      .flow-step::after { display: none !important; }
+      .flow-steps {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 40px;
+      }
+      .flow-steps::before { display: none; }
+      .section { padding: 80px 0; }
+      .cta-section { padding: 80px 0; }
+      .cta-title { font-size: 1.8rem; }
     }
     @media (max-width: 600px) {
       .nav { display: none; }
       .hamburger { display: flex; }
       .nav.open {
         display: flex; flex-direction: column;
-        position: absolute; top: 72px; left: 0; right: 0;
-        background: #fff;
-        padding: 24px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-        gap: 16px;
+        position: absolute; top: 76px; left: 0; right: 0;
+        background: rgba(250,248,245,0.98);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 32px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+        gap: 20px;
+        border-bottom: 1px solid rgba(26,26,26,0.04);
       }
-      .hero { padding: 120px 0 60px; }
-      .hero-title { font-size: 1.7rem; }
-      .hero-illustration { width: 260px; height: 260px; font-size: 3.5rem; }
+      .hero { padding: 120px 0 72px; }
+      .hero-title { font-size: 1.8rem; }
+      .hero-illustration { width: 220px; height: 220px; }
+      .hero-visual::before { width: 260px; height: 260px; }
       .services-grid { grid-template-columns: 1fr; }
       .problems-grid { grid-template-columns: 1fr; }
-      .stats-grid { grid-template-columns: 1fr; gap: 16px; }
+      .stats-grid { grid-template-columns: 1fr; gap: 12px; }
       .tools-grid { grid-template-columns: repeat(2, 1fr); }
-      .section { padding: 60px 0; }
-      .section-title { font-size: 1.5rem; }
+      .flow-steps { grid-template-columns: 1fr; gap: 32px; }
+      .section { padding: 64px 0; }
+      .section-title { font-size: 1.6rem; }
+      .section-header { margin-bottom: 48px; }
+      .strengths-list { gap: 48px; }
+      .pricing-wrapper::before { display: none; }
+      .pricing-card-body { padding: 32px 24px; }
+      .pricing-amount { font-size: 3rem; }
+      .cta-section { padding: 72px 0; }
+      .cta-title { font-size: 1.5rem; }
+      .btn-white { padding: 16px 36px; font-size: 0.9rem; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
     }
   </style>
 </head>
@@ -490,7 +1012,8 @@
 <header class="header" id="header">
   <div class="header-inner">
     <a href="#" class="logo">
-      「ヨハク」を作るオンライン秘書🍤
+      <span class="logo-mark">🍤</span>
+      ヨハク
     </a>
     <nav class="nav" id="nav">
       <a href="#services">サービス</a>
@@ -500,9 +1023,9 @@
       <a href="#faq">よくある質問</a>
       <a href="https://docs.google.com/forms/d/e/1FAIpQLSdGwQPf6zybCpuXeVpWJPe9eecjuu7wf8wFoXV_9FfMqV7caw/viewform" target="_blank" class="nav-cta">お問い合わせ</a>
     </nav>
-    <div class="hamburger" id="hamburger" onclick="document.getElementById('nav').classList.toggle('open')">
+    <button class="hamburger" id="hamburger" onclick="document.getElementById('nav').classList.toggle('open')" aria-label="メニュー">
       <span></span><span></span><span></span>
-    </div>
+    </button>
   </div>
 </header>
 
@@ -510,23 +1033,23 @@
 <section class="hero">
   <div class="container hero-inner">
     <div class="hero-text">
-      <span class="hero-badge">フリーランス・個人事業主の方へ</span>
-      <h1 class="hero-title">
+      <span class="hero-badge reveal stagger-1">フリーランス・個人事業主の方へ</span>
+      <h1 class="hero-title reveal stagger-2">
         あなたの時間に、<br>
-        <span>「ヨハク」</span>を作る<br>
+        <em>「ヨハク」</em>を作る<br>
         オンライン秘書。
       </h1>
-      <p class="hero-desc">
+      <p class="hero-desc reveal stagger-3">
         事務・SNS運用・デザイン・経理まで。<br>
         AIを活用した高速アウトプットと、先回りの提案力で、<br>
         あなたが本業に集中できるゆとりを生み出します。
       </p>
-      <div class="hero-buttons">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdGwQPf6zybCpuXeVpWJPe9eecjuu7wf8wFoXV_9FfMqV7caw/viewform" target="_blank" class="btn-primary">無料で相談する →</a>
+      <div class="hero-buttons reveal stagger-4">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdGwQPf6zybCpuXeVpWJPe9eecjuu7wf8wFoXV_9FfMqV7caw/viewform" target="_blank" class="btn-primary">無料で相談する <span class="arrow">→</span></a>
         <a href="#services" class="btn-secondary">サービスを見る</a>
       </div>
     </div>
-    <div class="hero-visual">
+    <div class="hero-visual reveal-scale stagger-3">
       <div class="hero-illustration">
         <img src="ebi-icon.png" alt="「ヨハク」を作るオンライン秘書🍤">
       </div>
@@ -534,24 +1057,27 @@
   </div>
 </section>
 
-<!-- ======== Stats ======== -->
+<!-- ======== Trust + Stats ======== -->
+<section class="trust-strip">
+  <div class="container">
+    <p class="trust-text reveal">
+      法人の方から個人の方まで、今まで<strong>幅広い業種・業態</strong>のクライアント様に対応させていただいています。
+    </p>
+  </div>
+</section>
+
 <section class="stats">
   <div class="container">
-    <p style="text-align:center;font-size:1.05rem;color:#666;max-width:600px;margin:0 auto;line-height:1.9;">
-      法人の方から個人の方まで、<br>
-      今まで<strong style="color:#e86b5a;">幅広い業種・業態</strong>のクライアント様に<br>
-      対応させていただいています。
-    </p>
-    <div class="stats-grid" style="margin-top:40px;">
-      <div class="stat-card">
+    <div class="stats-grid">
+      <div class="stat-card reveal stagger-1">
         <div class="stat-number">10<small>種+</small></div>
         <div class="stat-label">対応ツール数</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card reveal stagger-2">
         <div class="stat-number">5<small>種+</small></div>
         <div class="stat-label">AI活用ツール</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card reveal stagger-3">
         <div class="stat-number">6<small>種+</small></div>
         <div class="stat-label">提供サービス</div>
       </div>
@@ -560,27 +1086,27 @@
 </section>
 
 <!-- ======== Problems ======== -->
-<section class="section section-alt" id="problems">
+<section class="section section-on-cream" id="problems">
   <div class="container">
-    <div class="section-header">
+    <div class="section-header reveal">
       <span class="section-label">Problems</span>
       <h2 class="section-title">こんなお悩みはありませんか？</h2>
     </div>
     <div class="problems-grid">
-      <div class="problem-card">
-        <div class="problem-icon">😩</div>
+      <div class="problem-card reveal stagger-1">
+        <div class="problem-icon"><img src="icons/problem-busy.png" alt="事務作業"></div>
         <p class="problem-text">事務作業に追われて、本業に集中できない</p>
       </div>
-      <div class="problem-card">
-        <div class="problem-icon">📱</div>
+      <div class="problem-card reveal stagger-2">
+        <div class="problem-icon"><img src="icons/problem-sns.png" alt="SNS運用"></div>
         <p class="problem-text">SNSを運用したいけど、時間が足りない</p>
       </div>
-      <div class="problem-card">
-        <div class="problem-icon">📊</div>
+      <div class="problem-card reveal stagger-3">
+        <div class="problem-icon"><img src="icons/problem-invoice.png" alt="請求書・記帳"></div>
         <p class="problem-text">請求書や記帳が溜まって後回しになっている</p>
       </div>
-      <div class="problem-card">
-        <div class="problem-icon">🤔</div>
+      <div class="problem-card reveal stagger-4">
+        <div class="problem-icon"><img src="icons/problem-confused.png" alt="何を頼めば"></div>
         <p class="problem-text">誰かに頼みたいけど、何を頼めばいいかわからない</p>
       </div>
     </div>
@@ -588,41 +1114,41 @@
 </section>
 
 <!-- ======== Services ======== -->
-<section class="section" id="services">
+<section class="section section-on-white" id="services">
   <div class="container">
-    <div class="section-header">
+    <div class="section-header reveal">
       <span class="section-label">Services</span>
       <h2 class="section-title">提供サービス</h2>
       <p class="section-desc">幅広い業務に対応。必要なものだけ、必要な分だけご依頼いただけます。</p>
     </div>
     <div class="services-grid">
-      <div class="service-card">
-        <div class="service-icon">📸</div>
+      <div class="service-card reveal stagger-1">
+        <div class="service-icon"><img src="icons/service-instagram.png" alt="Instagram運用"></div>
         <div class="service-name">Instagram運用代行</div>
         <p class="service-desc">投稿画像作成・リール動画・キャプション作成まで一括対応。Canva＋CapCut＋AIで高品質な運用を実現。</p>
       </div>
-      <div class="service-card">
-        <div class="service-icon">🎨</div>
+      <div class="service-card reveal stagger-2">
+        <div class="service-icon"><img src="icons/service-design.png" alt="デザイン制作"></div>
         <div class="service-name">デザイン制作</div>
         <p class="service-desc">チラシ・名刺・プレゼン資料・バナーなど。Canvaを活用した、伝わるデザインをお届けします。</p>
       </div>
-      <div class="service-card">
-        <div class="service-icon">🎬</div>
+      <div class="service-card reveal stagger-3">
+        <div class="service-icon"><img src="icons/service-video.png" alt="動画編集"></div>
         <div class="service-name">動画編集</div>
         <p class="service-desc">CapCutによるリール・ショート動画の編集。カット・テロップ・BGM挿入まで対応。</p>
       </div>
-      <div class="service-card">
-        <div class="service-icon">💰</div>
+      <div class="service-card reveal stagger-4">
+        <div class="service-icon"><img src="icons/service-accounting.png" alt="経理・記帳"></div>
         <div class="service-name">経理・記帳代行</div>
         <p class="service-desc">マネーフォワード・Freeeを使った記帳代行、請求書作成。毎月の経理業務をお任せください。</p>
       </div>
-      <div class="service-card">
-        <div class="service-icon">✉️</div>
+      <div class="service-card reveal stagger-5">
+        <div class="service-icon"><img src="icons/service-secretary.png" alt="事務・秘書"></div>
         <div class="service-name">事務・秘書業務</div>
         <p class="service-desc">メール対応・スケジュール管理・資料作成など。細かな事務作業を丁寧にサポートします。</p>
       </div>
-      <div class="service-card">
-        <div class="service-icon">🤖</div>
+      <div class="service-card reveal stagger-6">
+        <div class="service-icon"><img src="icons/service-ai.png" alt="AI活用"></div>
         <div class="service-name">AI活用・業務効率化</div>
         <p class="service-desc">ChatGPT・Gemini・Claude等を活用した業務効率化の提案と実行。あなたの業務にAIを組み込みます。</p>
       </div>
@@ -631,63 +1157,65 @@
 </section>
 
 <!-- ======== Pricing ======== -->
-<section class="section section-alt" id="pricing">
+<section class="section section-on-cream" id="pricing">
   <div class="container">
-    <div class="section-header">
+    <div class="section-header reveal">
       <span class="section-label">Pricing</span>
       <h2 class="section-title">料金</h2>
       <p class="section-desc">シンプルな時間制。必要な分だけご依頼いただけます。</p>
     </div>
-    <div class="pricing-card">
-      <div class="pricing-card-header">
-        <div class="pricing-plan-name">基本料金</div>
-        <div class="pricing-amount">3,000<small>円</small></div>
-        <div class="pricing-unit">/ 1時間（税込）</div>
-      </div>
-      <div class="pricing-card-body">
-        <p class="pricing-note">
-          ※ 作業内容や専門性に応じて<strong>料金が変動する場合</strong>がございます。<br>
-          事前にお見積もりをお出ししますので、ご安心ください。
-        </p>
-        <ul class="pricing-features">
-          <li>事前ヒアリングでお見積もり</li>
-          <li>作業内容に応じた柔軟な対応</li>
-          <li>追加料金が発生する場合は事前にご相談</li>
-          <li>まずは小さなお仕事からでもOK</li>
-        </ul>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdGwQPf6zybCpuXeVpWJPe9eecjuu7wf8wFoXV_9FfMqV7caw/viewform" target="_blank" class="btn-primary" style="width:100%;justify-content:center;">まずは相談する →</a>
+    <div class="pricing-wrapper reveal-scale">
+      <div class="pricing-card">
+        <div class="pricing-card-header">
+          <div class="pricing-plan-name">Basic Rate</div>
+          <div class="pricing-amount">3,000<small>円</small></div>
+          <div class="pricing-unit">/ 1時間（税込）</div>
+        </div>
+        <div class="pricing-card-body">
+          <p class="pricing-note">
+            ※ 作業内容や専門性に応じて<strong>料金が変動する場合</strong>がございます。<br>
+            事前にお見積もりをお出ししますので、ご安心ください。
+          </p>
+          <ul class="pricing-features">
+            <li>事前ヒアリングでお見積もり</li>
+            <li>作業内容に応じた柔軟な対応</li>
+            <li>追加料金が発生する場合は事前にご相談</li>
+            <li>まずは小さなお仕事からでもOK</li>
+          </ul>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSdGwQPf6zybCpuXeVpWJPe9eecjuu7wf8wFoXV_9FfMqV7caw/viewform" target="_blank" class="btn-primary" style="width:100%;justify-content:center;">まずは相談する <span class="arrow">→</span></a>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ======== Strengths ======== -->
-<section class="section section-alt" id="strengths">
+<section class="section section-on-white" id="strengths">
   <div class="container">
-    <div class="section-header">
+    <div class="section-header reveal">
       <span class="section-label">What You Get</span>
       <h2 class="section-title">お願いすると、こう変わります</h2>
     </div>
     <div class="strengths-list">
       <div class="strength-item">
-        <div class="strength-visual strength-visual-1">💡</div>
-        <div class="strength-content">
+        <div class="strength-visual strength-visual-1 reveal-left"><img src="icons/strength-clarity.png" alt="提案力"></div>
+        <div class="strength-content reveal-right">
           <div class="strength-number">01</div>
           <h3 class="strength-title">「何を頼めばいいかわからない」がなくなる</h3>
           <p class="strength-desc">まずは困っていることを聞かせてください。業務を整理して「こんなこともお任せいただけますよ」とご提案します。定期的な業務レポートで、何をやっているかも見える化。安心してお任せいただけます。</p>
         </div>
       </div>
       <div class="strength-item">
-        <div class="strength-visual strength-visual-2">⚡</div>
-        <div class="strength-content">
+        <div class="strength-visual strength-visual-2 reveal-right"><img src="icons/strength-speed.png" alt="スピード"></div>
+        <div class="strength-content reveal-left">
           <div class="strength-number">02</div>
           <h3 class="strength-title">「早い」のに「ちゃんとしてる」</h3>
           <p class="strength-desc">複数のAIツールを活用して、スピーディーに仕上げます。もちろん、すべて人の目でチェック・調整してからお渡し。「速くて雑」ではなく「速くて丁寧」なアウトプットをお届けします。</p>
         </div>
       </div>
       <div class="strength-item">
-        <div class="strength-visual strength-visual-3">🤝</div>
-        <div class="strength-content">
+        <div class="strength-visual strength-visual-3 reveal-left"><img src="icons/strength-trust.png" alt="安心感"></div>
+        <div class="strength-content reveal-right">
           <div class="strength-number">03</div>
           <h3 class="strength-title">「任せてよかった」と思える安心感</h3>
           <p class="strength-desc">ただの作業代行ではなく、あなたの事業のことを一緒に考えます。小さな仕事でも丁寧に。「次もお願いしたい」と思っていただける関係を大切にしています。</p>
@@ -698,54 +1226,54 @@
 </section>
 
 <!-- ======== Tools ======== -->
-<section class="section" id="tools">
+<section class="section section-on-cream" id="tools">
   <div class="container">
-    <div class="section-header">
+    <div class="section-header reveal">
       <span class="section-label">Tools</span>
       <h2 class="section-title">使用ツール</h2>
       <p class="section-desc">デザイン・動画・AI・会計。幅広いツールを使いこなして業務を遂行します。</p>
     </div>
     <div class="tools-grid">
-      <div class="tool-tag"><span class="tool-tag-icon">🎨</span>Canva</div>
-      <div class="tool-tag"><span class="tool-tag-icon">🎬</span>CapCut</div>
-      <div class="tool-tag"><span class="tool-tag-icon">🤖</span>ChatGPT</div>
-      <div class="tool-tag"><span class="tool-tag-icon">✨</span>Gemini</div>
-      <div class="tool-tag"><span class="tool-tag-icon">🧠</span>Claude</div>
-      <div class="tool-tag"><span class="tool-tag-icon">🔍</span>Genspark</div>
-      <div class="tool-tag"><span class="tool-tag-icon">📓</span>NotebookLM</div>
-      <div class="tool-tag"><span class="tool-tag-icon">💰</span>マネーフォワード</div>
-      <div class="tool-tag"><span class="tool-tag-icon">📊</span>Freee</div>
-      <div class="tool-tag"><span class="tool-tag-icon">📝</span>スプレッドシート</div>
-      <div class="tool-tag"><span class="tool-tag-icon">💬</span>Chatwork</div>
-      <div class="tool-tag"><span class="tool-tag-icon">📋</span>Notion</div>
+      <div class="tool-tag reveal stagger-1"><span class="tool-tag-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>Canva</div>
+      <div class="tool-tag reveal stagger-2"><span class="tool-tag-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></span>CapCut</div>
+      <div class="tool-tag reveal stagger-3"><span class="tool-tag-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="12" cy="10" r="1" fill="var(--coral)"/><circle cx="8" cy="10" r="1" fill="var(--coral)"/><circle cx="16" cy="10" r="1" fill="var(--coral)"/></svg></span>ChatGPT</div>
+      <div class="tool-tag reveal stagger-4"><span class="tool-tag-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>Gemini</div>
+      <div class="tool-tag reveal stagger-1"><span class="tool-tag-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/><path d="M17 2h5v5"/><path d="M22 2l-5 5"/></svg></span>Claude</div>
+      <div class="tool-tag reveal stagger-2"><span class="tool-tag-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/><line x1="11" y1="8" x2="11" y2="14"/></svg></span>Genspark</div>
+      <div class="tool-tag reveal stagger-3"><span class="tool-tag-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg></span>NotebookLM</div>
+      <div class="tool-tag reveal stagger-4"><span class="tool-tag-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>マネーフォワード</div>
+      <div class="tool-tag reveal stagger-1"><span class="tool-tag-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></span>Freee</div>
+      <div class="tool-tag reveal stagger-2"><span class="tool-tag-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>スプレッドシート</div>
+      <div class="tool-tag reveal stagger-3"><span class="tool-tag-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>Chatwork</div>
+      <div class="tool-tag reveal stagger-4"><span class="tool-tag-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>Notion</div>
     </div>
   </div>
 </section>
 
 <!-- ======== Flow ======== -->
-<section class="section section-alt" id="flow">
+<section class="section section-on-white" id="flow">
   <div class="container">
-    <div class="section-header">
+    <div class="section-header reveal">
       <span class="section-label">Flow</span>
       <h2 class="section-title">ご利用の流れ</h2>
     </div>
     <div class="flow-steps">
-      <div class="flow-step">
+      <div class="flow-step reveal stagger-1">
         <div class="flow-step-number">1</div>
         <h3 class="flow-step-title">お問い合わせ</h3>
         <p class="flow-step-desc">まずはお気軽にご相談ください。困っていること、任せたいことをお聞かせください。</p>
       </div>
-      <div class="flow-step">
+      <div class="flow-step reveal stagger-2">
         <div class="flow-step-number">2</div>
         <h3 class="flow-step-title">ヒアリング</h3>
         <p class="flow-step-desc">業務内容を詳しく伺い、最適なサポートプランをご提案します。</p>
       </div>
-      <div class="flow-step">
+      <div class="flow-step reveal stagger-3">
         <div class="flow-step-number">3</div>
         <h3 class="flow-step-title">業務開始</h3>
         <p class="flow-step-desc">お任せいただいた業務を、スピードと丁寧さをもって遂行します。</p>
       </div>
-      <div class="flow-step">
+      <div class="flow-step reveal stagger-4">
         <div class="flow-step-number">4</div>
         <h3 class="flow-step-title">報告・改善</h3>
         <p class="flow-step-desc">定期的に業務レポートをお送りし、改善と次の提案を行います。</p>
@@ -755,48 +1283,53 @@
 </section>
 
 <!-- ======== FAQ ======== -->
-<section class="section" id="faq">
+<section class="section section-on-cream" id="faq">
   <div class="container">
-    <div class="section-header">
+    <div class="section-header reveal">
       <span class="section-label">FAQ</span>
       <h2 class="section-title">よくある質問</h2>
     </div>
     <div class="faq-list">
-      <div class="faq-item">
+      <div class="faq-item reveal stagger-1">
         <button class="faq-question" onclick="this.classList.toggle('active');this.nextElementSibling.classList.toggle('open')">
           何を頼めばいいかわからないのですが、大丈夫ですか？
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span>
         </button>
         <div class="faq-answer">
           <p>もちろんです！まずはお気軽にご相談ください。ヒアリングを通じて、お任せいただける業務を一緒に整理します。「こんなこともできますよ」というご提案もいたします。</p>
         </div>
       </div>
-      <div class="faq-item">
+      <div class="faq-item reveal stagger-2">
         <button class="faq-question" onclick="this.classList.toggle('active');this.nextElementSibling.classList.toggle('open')">
           どんな業務に対応していますか？
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span>
         </button>
         <div class="faq-answer">
           <p>SNS運用代行（Instagram）、デザイン制作、動画編集、経理・記帳代行、事務・メール対応、業務効率化のご提案など、幅広く対応しています。まずはお気軽にお聞きください。</p>
         </div>
       </div>
-      <div class="faq-item">
+      <div class="faq-item reveal stagger-3">
         <button class="faq-question" onclick="this.classList.toggle('active');this.nextElementSibling.classList.toggle('open')">
           AIを使っているとのことですが、品質は大丈夫ですか？
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span>
         </button>
         <div class="faq-answer">
           <p>AIはあくまでスピードアップのためのツールです。すべてのアウトプットは私が内容をチェック・調整してからお渡ししますので、品質にはご安心ください。</p>
         </div>
       </div>
-      <div class="faq-item">
+      <div class="faq-item reveal stagger-4">
         <button class="faq-question" onclick="this.classList.toggle('active');this.nextElementSibling.classList.toggle('open')">
           料金はどのくらいですか？
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span>
         </button>
         <div class="faq-answer">
           <p>基本料金は1時間3,000円（税込）です。作業内容や専門性に応じて変動する場合がありますが、事前にお見積もりをお出ししますのでご安心ください。</p>
         </div>
       </div>
-      <div class="faq-item">
+      <div class="faq-item reveal stagger-5">
         <button class="faq-question" onclick="this.classList.toggle('active');this.nextElementSibling.classList.toggle('open')">
           連絡手段は何ですか？
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span>
         </button>
         <div class="faq-answer">
           <p>Chatwork、LINE、メールなど、クライアント様のご都合に合わせて対応いたします。</p>
@@ -808,14 +1341,16 @@
 
 <!-- ======== CTA ======== -->
 <section class="cta-section" id="contact">
-  <div class="container">
-    <h2 class="cta-title">まずはお気軽にご相談ください</h2>
-    <p class="cta-desc">
+  <div class="container cta-inner">
+    <h2 class="cta-title reveal">まずはお気軽にご相談ください</h2>
+    <p class="cta-desc reveal stagger-1">
       「こんなこと頼めるかな？」でOKです。<br>
       あなたの事業をサポートできることを、一緒に見つけましょう。
     </p>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdGwQPf6zybCpuXeVpWJPe9eecjuu7wf8wFoXV_9FfMqV7caw/viewform" target="_blank" class="btn-white">無料で相談する →</a>
-    <p style="margin-top:20px;font-size:0.9rem;opacity:0.85;">リベシティの方はDMでもお気軽にどうぞ</p>
+    <div class="reveal stagger-2">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdGwQPf6zybCpuXeVpWJPe9eecjuu7wf8wFoXV_9FfMqV7caw/viewform" target="_blank" class="btn-white">無料で相談する <span class="arrow">→</span></a>
+    </div>
+    <p class="cta-sub reveal stagger-3">リベシティの方はDMでもお気軽にどうぞ</p>
   </div>
 </section>
 
@@ -838,10 +1373,31 @@
 
 <!-- ======== Scripts ======== -->
 <script>
-  // Header scroll effect
-  window.addEventListener('scroll', () => {
-    document.getElementById('header').classList.toggle('scrolled', window.scrollY > 10);
+  // Scroll-triggered reveal animations
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -40px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
+    observer.observe(el);
   });
+
+  // Header scroll effect
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const header = document.getElementById('header');
+    header.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
 
   // Smooth scroll for anchor links
   document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -849,7 +1405,9 @@
       e.preventDefault();
       const target = document.querySelector(a.getAttribute('href'));
       if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const offset = 90;
+        const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
         document.getElementById('nav').classList.remove('open');
       }
     });
